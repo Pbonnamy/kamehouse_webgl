@@ -1,0 +1,455 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 591,
+      "max": [
+        0.0079528214409947395,
+        0.13814933598041534,
+        0.0081683630123734474
+      ],
+      "min": [
+        -0.0079528465867042542,
+        0.13162384927272797,
+        -0.007737315259873867
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 7092,
+      "componentType": 5126,
+      "count": 591,
+      "max": [
+        1,
+        0,
+        1
+      ],
+      "min": [
+        -1,
+        0,
+        -1
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 591,
+      "max": [
+        0.9833797812461853,
+        0.97789877653121948
+      ],
+      "min": [
+        0,
+        0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 2304,
+      "max": [
+        590
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 14184,
+      "componentType": 5126,
+      "count": 1733,
+      "max": [
+        0.1131962314248085,
+        0.1131962388753891,
+        0.011565332300961018
+      ],
+      "min": [
+        -0.1131962388753891,
+        -0.1131962388753891,
+        0.0084363650530576706
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 34980,
+      "componentType": 5126,
+      "count": 1733,
+      "max": [
+        0.036500319838523865,
+        0.036500319838523865,
+        0.99999988079071045
+      ],
+      "min": [
+        -0.036408852785825729,
+        -0.036408867686986923,
+        0.99933338165283203
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 4728,
+      "componentType": 5126,
+      "count": 1733,
+      "max": [
+        0.96493351459503174,
+        0.95131951570510864
+      ],
+      "min": [
+        0.039998341351747513,
+        0.042523406445980072
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 9216,
+      "componentType": 5125,
+      "count": 9024,
+      "max": [
+        1732
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 55776,
+      "componentType": 5126,
+      "count": 4333,
+      "max": [
+        0.12224956601858139,
+        0.14730449020862579,
+        0.012651712633669376
+      ],
+      "min": [
+        -0.12224956601858139,
+        -0.12224956601858139,
+        -0.012214378453791142
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 107772,
+      "componentType": 5126,
+      "count": 4333,
+      "max": [
+        1,
+        1,
+        1
+      ],
+      "min": [
+        -1,
+        -1,
+        -1
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 18592,
+      "componentType": 5126,
+      "count": 4333,
+      "max": [
+        0.98350030183792114,
+        0.98161131143569946
+      ],
+      "min": [
+        0.022604843601584435,
+        0.029304150491952896
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 45312,
+      "componentType": 5125,
+      "count": 19008,
+      "max": [
+        4332
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "kabukidanshii (https://sketchfab.com/kabukidanshii)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/dragon-radar-fbd16223dc3043fbb5d05b77ccf79cec",
+      "title": "Dragon Radar"
+    },
+    "generator": "Sketchfab-9.90.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 121344,
+      "byteOffset": 0,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 53256,
+      "byteOffset": 121344,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 159768,
+      "byteOffset": 174600,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 334368,
+      "uri": "scene.bin"
+    }
+  ],
+  "images": [
+    {
+      "uri": "textures/Material.002_baseColor.png"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "name": "Material.011",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.32637300000000002,
+          0.32637300000000002,
+          0.32637300000000002,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.92702077859794607
+      }
+    },
+    {
+      "doubleSided": true,
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "name": "Material.002",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "baseColorTexture": {
+          "index": 0,
+          "texCoord": 0
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 0.080183803634727435
+      }
+    },
+    {
+      "doubleSided": true,
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "name": "Material.001",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.80000000000000004,
+          0.80000000000000004,
+          0.80000000000000004,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.78935022381894659
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Radar_Material.011_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Radar_Material.002_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 5,
+            "POSITION": 4,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Radar_Material.001_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 9,
+            "POSITION": 8,
+            "TEXCOORD_0": 10
+          },
+          "indices": 11,
+          "material": 2,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "name": "RootNode (gltf orientation matrix)",
+      "rotation": [
+        -0.70710678118654746,
+        -0,
+        -0,
+        0.70710678118654757
+      ]
+    },
+    {
+      "children": [
+        2
+      ],
+      "name": "RootNode (model correction matrix)"
+    },
+    {
+      "children": [
+        3
+      ],
+      "matrix": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "name": "Radar.fbx"
+    },
+    {
+      "children": [
+        4
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        5,
+        6,
+        7
+      ],
+      "matrix": [
+        -99.999999999999602,
+        -8.7422779804564875e-06,
+        0,
+        0,
+        -1.4242978711041864e-12,
+        1.6292067994694293e-05,
+        99.99999999999865,
+        0,
+        -8.7422779804563706e-06,
+        99.99999999999828,
+        -1.6292067983592062e-05,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "name": "Radar"
+    },
+    {
+      "mesh": 0,
+      "name": "Radar_Material.011_0"
+    },
+    {
+      "mesh": 1,
+      "name": "Radar_Material.002_0"
+    },
+    {
+      "mesh": 2,
+      "name": "Radar_Material.001_0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "OSG_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    }
+  ]
+}
+

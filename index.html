@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Kame House</title>
+		<meta charset="utf-8">
+		<link rel="icon" type="image/png" href="icon.jpg" />
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="../three.js-master/examples/main.css">
+		<link type="text/css" rel="stylesheet" href="master.css">
+	</head>
+	<body id="body">
+
+		<script type="module">
+
+			import * as THREE from '../three.js-master/build/three.module.js';
+      import {OrbitControls} from '../three.js-master/examples/jsm/controls/OrbitControls.js';
+			import { ColladaLoader } from '../three.js-master/examples/jsm/loaders/ColladaLoader.js';
+			import { FBXLoader } from '../three.js-master/examples/jsm/loaders/FBXLoader.js';
+			import { GLTFLoader } from '../three.js-master/examples/jsm/loaders/GLTFLoader.js';
+			import Stats from '../three.js-master/examples/jsm/libs/stats.module.js';
+
+      const islandTexture = new THREE.TextureLoader().load( 'sand.jpg' );
+      const islandTexture2 = new THREE.TextureLoader().load( 'grass.jpg' );
+      const seaTexture = new THREE.TextureLoader().load( 'sea.jpg' );
+      const wallTexture = new THREE.TextureLoader().load( 'wall.jpg' );
+      const roofTexture = new THREE.TextureLoader().load( 'roof.jpg' );
+      const whiteTexture = new THREE.TextureLoader().load( 'white.jpg' );
+			const winGTexture = new THREE.TextureLoader().load( 'windowG.jpg' );
+			const winDTexture = new THREE.TextureLoader().load( 'windowD.jpg' );
+			const doorTexture = new THREE.TextureLoader().load( 'door.jpg' );
+			const rockTexture = new THREE.TextureLoader().load( 'rock.jpg' );
+			const modifWallTextureG = new THREE.TextureLoader().load( 'wall.jpg' );
+			modifWallTextureG.wrapS = THREE.RepeatWrapping;
+			modifWallTextureG.wrapT = THREE.RepeatWrapping;
+			modifWallTextureG.repeat.set( 0.2, 0.2 );
+			const modifWallTextureD = new THREE.TextureLoader().load( 'wall.jpg' );
+			modifWallTextureD.wrapS = THREE.RepeatWrapping;
+			modifWallTextureD.wrapT = THREE.RepeatWrapping;
+			modifWallTextureD.repeat.set( 0.2, 0.2);
+			modifWallTextureD.center.set(1,1);
+
+      const canvas = document.getElementById('body');
+			let camera, scene, renderer, Orbcontrols;
+			let island,islandGeo,islandMat;
+      let island2,islandGeo2,islandMat2;
+      let sea, seaGeo, seaMat;
+      let wall, wallGeo,wallMat,wallX,wallY,wallZ,wallRot,walll,wallL,wallW,wTexture;
+      let floor, floorGeo, floorMat,floorY;
+      let triangle, triangleGeo, triangleMat,triangleZ,vx1,vy1,vx2,vy2,vx3,vy3,tritexture,triRotY,vtx,vty;
+      let roof,roofGeo,roofMat,roofX,roofY,roofRotY,roofRotX,roofl,roofL,roofW,roofZ;
+      let bottom,bottomMat,bottomGeo,bx,by,bz,bpx,bpy,bpz;
+      let step,stepGeo,stepMat,stepZ,stepY,stepHeight;
+      let column,columnGeo,columnMat,column2,columnGeo2,column2Y,columnX;
+      let back,backGeo,backMat;
+      let text, textGeo, textMat,textContent,textY,textX;
+			let winRGeo,winRMat,winRoof;
+			let winSGeo,winSMat, statWin,sWinX,sWinY,sWinZ,sWinl,sWinL,sWinW,sWinRot;
+			let door, doorGeo, doorMat;
+			let dynWin1,dynWin2,dynWin3,dynWin4,winDGeo,winDMat,dWinX,dWinY,dWinZ,winTexture,countWin;
+			let ambientLight,light,lightHelper,shadowCameraHelper,intlight,shenlight;
+			let loaderpalm,palm,palmX,palmY,palmZ;
+			let loaderchair,chair,chairX,chairY,chairZ,chairRot;
+			let loaderumbrella,umbrella;
+			let rock,rockGeo,rockMat,rockX,rockY,rockZ,rockRadius,rockDetail;
+			let loaderdb,db;
+			let loaderRadar,radar;
+			let goku,loaderGoku;
+			let cloud,loaderCloud;
+			let shenron,loaderShenron;
+			let showFPS;
+			let actualBg = 1;
+			let decalage = 0;
+			let finishtrigger =0;
+			let nbMusic,audioLoader1,sound1,listener1,audioLoader2,sound2,listener2;
+
+			init();
+			animate();
+
+			function init() {
+
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 100,2000000 );
+				camera.position.set(0,10000,15000);
+
+				scene = new THREE.Scene();
+
+
+				islandGeo = new THREE.CylinderBufferGeometry( 9000, 9000, 50,15);
+				islandMat = new THREE.MeshPhongMaterial( { map: islandTexture } );
+				island = new THREE.Mesh( islandGeo, islandMat );
+				island.receiveShadow = true;
+
+        islandGeo2 = new THREE.CylinderBufferGeometry( 7000, 7000, 25,15);
+				islandMat2 = new THREE.MeshPhongMaterial( { map: islandTexture2 } );
+				island2 = new THREE.Mesh( islandGeo2, islandMat2 );
+        island2.position.y = 50;
+				island2.receiveShadow = true;
+
+        seaGeo = new THREE.PlaneBufferGeometry(50000,50000);
+				seaMat = new THREE.MeshPhongMaterial( { map: seaTexture, side: THREE.DoubleSide} );
+				sea = new THREE.Mesh( seaGeo, seaMat );
+				sea.receiveShadow = true;
+        sea.position.y = -50;
+        sea.rotation.x = 1.57;
+
+				scene.add( island ); //sable
+        scene.add( island2 ); // herbe
+        scene.add( sea );
+
+        createWall(0,1500,-1950,0,4000,3000,100,1); //mur arriere
+
+				//mur gauche
+				createWall(-1950,1700,1600,1.57,800,1000,100,2,1); //droite
+				createWall(-1950,1700,-1600,1.57,800,1000,100,2,2); //gauche
+				createWall(-1950,2600,0,1.57,4000,800,100,1); //haut
+				createWall(-1950,800,0,1.57,4000,800,100,1); //bas
+
+				//mur droite
+				createWall(1950,1700,1600,1.57,800,1000,100,2,2); //droite
+				createWall(1950,1700,-1600,1.57,800,1000,100,2,1); //gauche
+				createWall(1950,2600,0,1.57,4000,800,100,1); //haut
+				createWall(1950,800,0,1.57,4000,800,100,1); //bas
+
+        createWall(0,1500,1950,0,4000,3000,100,1); //mur avant
+
+        createFloor(430); // bas
+        createFloor(2950); //haut
+
+
+        createTriangle(2000,'wall',2000,3000,0,4500,-2000,3000,0,0.5,1); //avant
+        createTriangle(-2000,'wall',2000,3000,0,4500,-2000,3000,0,0.5,1); //arriere
+        createTriangle(-10,'white',3000,2400,2000,2900,2000,2400,4.71,0.5,1); // entrée gauche
+        createTriangle(-2000,'white',3000,2400,2000,2900,2000,2400,4.71,0.5,1); //entrée droite
+
+        createTriangle(-1000,'wall',3000,2400,2000,2900,2000,2400,1.57,1,0); //backbox gauche
+        createTriangle(1000,'wall',3000,2400,2000,2900,2000,2400,1.57,1,0); //backbox droite
+
+				createTriangle(1450,'wall',452,4250,0,4500,-448,4250,4.71,0.5,1); //fenetre toit
+
+        createRoof(1100,3700,0,1.57,2.5,2800,4400,50); //gauche
+        createRoof(-1100,3700,0,1.57,0.65,2800,4400,50); //droite
+
+        createRoof(1000,2650,2500,2.05,0,2000,1200,50); //entrée
+
+        createRoof(0,2675,-2500,1.1,0,2200,1400,50); //backbox
+
+				createRoof(-775,4365,-250,1.05,0,1550,600,50); //gauche fenetre toit
+				createRoof(-775,4375,250,2.05,0,1550,600,50); //droite fenetre toit
+
+        bottomFloor(4100,400,4100,0,200,0); //care blanc contour (milieu)
+        bottomFloor(2100,400,1100,0,200,-2500); // //care blanc contour (backbox)
+
+        entryStep(1500,100,200); //marche bas
+        entryStep(1000,300,200); //marche haut
+        entryStep(850,2400,10); //toit entrée
+
+        entrycolumn(200);
+        entrycolumn(1800);
+
+        backbox();
+
+        textKame('KAME',-1100,3100);
+        textKame('HOUSE',-900,2700);
+
+				windowRoof();
+
+				staticwindow(0,1600,-3000,1200,800,40,0); //arriere
+				staticwindow(-1000,1700,2000,1200,1000,40,0); //avant
+				staticwindow(-1450,3900,0,600,600,40,1.57); //toit
+
+				createdoor();
+
+				winTexture = 'gWin';
+				dynamicWindow(-2000,1700,-600,winTexture,1); // gauche gauche
+				dynamicWindow(2000,1700,600,winTexture,3); // droite  gauche
+				winTexture = 'dWin';
+				dynamicWindow(-2000,1700,600,winTexture,2); //gauche droite
+				dynamicWindow(2000,1700,-600,winTexture,4); // droite droite
+
+				addPalm(-3500,75,-4000);
+				addPalm(4500,75,-1000);
+
+				addChair(-3500,75,6500,1);
+				addChair(6000,75,4500,2);
+
+				addumbrella();
+
+				addRock(0,100,-7000,1300,2);
+				addRock(3000,100,-6000,800,1);
+				addRock(-8500,100,-1500,1000,2);
+				addRock(-5000,100,1000,600,1);
+				addRock(-7000,50,5000,800,3);
+				addRock(-1500,50,7000,700,2);
+				addRock(3000,50,5500,400,3);
+				addRock(8500,50,0,1000,4);
+
+				dragonBall();
+
+				createRadar();
+
+				addgoku();
+
+				addcloud();
+
+				ambientLight = new THREE.AmbientLight( 0xffffff, 0.1 );
+				scene.add(ambientLight);
+
+				light = new THREE.SpotLight(0xffe484,2); //(couleur, intensité)
+				light.angle = Math.PI/4; // angle d'ouverture
+				light.castShadow = true;
+				light.distance = 100000; //distance maximum (lumiere)
+				light.shadow.mapSize.width = 8192; //résolution ombres (longueur)
+				light.shadow.mapSize.height = 8192; //résolution ombres (largeur)
+				light.shadow.camera.near = 1000; // distance minimum (ombre)
+				light.shadow.camera.far = 100000; // distance maximum (ombre)
+				scene.add(light);
+
+				intlight = new THREE.PointLight(0xff7f00,1.5);
+				intlight.castShadow = true;
+				intlight.position.set(0,1600,0);
+				intlight.shadow.camera.near = 800;
+				intlight.shadow.camera.far = 6000;
+				scene.add(intlight);
+
+				//helper
+				// lightHelper = new THREE.SpotLightHelper( shenlight );
+				// //scene.add( lightHelper );
+				// // //
+				// shadowCameraHelper = new THREE.CameraHelper( shenlight.shadow.camera );
+				// //scene.add( shadowCameraHelper );
+
+				listener1 = new THREE.AudioListener();
+				listener2 = new THREE.AudioListener();
+				camera.add( listener1 );
+				camera.add( listener2 );
+
+				sound1 = new THREE.Audio( listener1 );
+				sound2 = new THREE.Audio( listener1 );
+
+				audioLoader1 = new THREE.AudioLoader();
+				audioLoader2 = new THREE.AudioLoader();
+				audioLoader1.load( 'music/m1.mp3', function( buffer ) {
+					sound1.setBuffer( buffer );
+					sound1.setLoop( true );
+					sound1.setVolume( 2 );
+					sound1.play();
+				});
+
+				audioLoader2.load( 'music/m2.mp3', function( buffer ) {
+					sound2.setBuffer( buffer );
+					sound2.setLoop( true );
+					sound2.setVolume( 2 );
+				});
+
+				showFPS = new Stats();
+				showFPS.domElement.style.position = 'absolute';
+				showFPS.domElement.style.top = '0px';
+				document.body.appendChild( showFPS.domElement );
+
+				renderer = new THREE.WebGLRenderer( { antialias: true,alpha: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				renderer.shadowMap.enabled = true;
+				renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+				renderer.outputEncoding = THREE.sRGBEncoding;
+
+        Orbcontrols = new OrbitControls(camera,renderer.domElement, canvas);
+	  		Orbcontrols.target.set(0, 5000, 0);
+	  		Orbcontrols.update();
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			let testSummon = 0;
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				if(db != undefined){
+					db.rotation.z +=0.01;
+				}
+				if(radar != undefined){
+					radar.rotation.z +=0.02;
+				}
+				if((radar != undefined) && (goku != undefined) && (cloud != undefined)){
+					//console.log(goku.position.x+'/'+goku.position.y+'/'+goku.position.z+'///'+radar.position.x+'/'+radar.position.y+'/'+radar.position.z)
+					if((goku.position.y <= radar.position.y+500) && (goku.position.y >= radar.position.y-500)
+							&& (goku.position.z <= radar.position.z+500) && (goku.position.z >= radar.position.z-500)
+							&& (goku.position.x <= radar.position.x+500) && (goku.position.x >= radar.position.x-500) && testSummon == 0){
+						testSummon = 1;
+						finishtrigger = 1;
+						scene.remove(radar);
+						openWindows();
+						changeMusic();
+						summonShenron();
+					}
+				}
+
+				if(finishtrigger == 0){
+					if(light.position.y < 0){
+						decalage =0;
+						if(actualBg == 1){
+							actualBg = 2;
+							changeBackground(actualBg);
+							light.color.setHex( 0x2e4482 );
+						}else if(actualBg == 2){
+							actualBg = 1;
+							changeBackground(actualBg);
+							light.color.setHex( 0xffe484 );
+						}
+					}
+					//mouvement de rotation (selon principe du cercle trigonometrique)
+					light.position.x = 40000*Math.cos(decalage);//rayon *(cos/sin)(vitese)
+					light.position.y = 40000*Math.sin(decalage);
+					light.position.z = 40000*Math.cos(decalage);
+					//console.log(light.position.x+'/'+light.position.y+'/'+light.position.z);
+					decalage += 0.003;
+				}else if (finishtrigger == 1) {
+					light.position.x = 20214;
+					light.position.y = 34516;
+					light.position.z = 20214;
+				}
+
+				showFPS.update();
+				render();
+				renderer.render( scene, camera );
+			}
+
+
+			function render() {
+
+				// lightHelper.update();
+				// //
+				// shadowCameraHelper.update();
+
+				renderer.render( scene, camera );
+
+			}
+
+			let winTrigger = 0;
+			let speed = 300;
+			document.addEventListener("keydown", onDocumentKeyDown);
+			function onDocumentKeyDown(event) {
+				if (event.keyCode == 70 && winTrigger == 0){ // F
+					dynWin1.rotation.y = 2.0;
+					dynWin1.position.z -=1100;
+					dynWin1.position.x -=250;
+
+					dynWin2.rotation.y = 1.2;
+					dynWin2.position.z +=1100;
+					dynWin2.position.x -=250;
+
+					dynWin3.rotation.y = 4.2;
+					dynWin3.position.z -=2300;
+					dynWin3.position.x +=300;
+
+					dynWin4.rotation.y = 5.3;
+					dynWin4.position.z +=2250;
+					dynWin4.position.x +=300;
+
+					winTrigger = 1;
+				}else if (event.keyCode == 70 && winTrigger == 1){
+					dynWin1.rotation.y = 1.57;
+					dynWin1.position.z +=1100;
+					dynWin1.position.x +=250;
+
+					dynWin2.rotation.y = 1.57;
+					dynWin2.position.z -=1100;
+					dynWin2.position.x +=250;
+
+					dynWin3.rotation.y = 1.57;
+					dynWin3.position.z +=2300;
+					dynWin3.position.x -=300;
+
+					dynWin4.rotation.y = 1.57;
+					dynWin4.position.z -=2250;
+					dynWin4.position.x -=300;
+
+					winTrigger = 0;
+				}
+
+				if (event.keyCode == 90) { // arrière (Z)
+						goku.position.z -= speed;
+						cloud.position.z -= speed;
+						goku.rotation.y = 0;
+		    } else if (event.keyCode == 83) { //avant (S)
+						goku.position.z += speed;
+						cloud.position.z += speed;
+						goku.rotation.y = 3.14;
+		    } else if (event.keyCode == 81) { //Gauche (Q)
+		        goku.position.x -= speed;
+						cloud.position.x -= speed;
+						goku.rotation.y = 1.57;
+		    } else if (event.keyCode == 68) {//Droite (D)
+		        goku.position.x += speed;
+						cloud.position.x += speed;
+						goku.rotation.y = - 1.57;
+				} else if (event.keyCode == 16 && goku.position.y > 800){ // Bas (Maj)
+						goku.position.y-=speed;
+						cloud.position.y-=speed;
+				}	else if (event.keyCode == 32){ //Saut (ESPACE)
+						goku.position.y+=speed;
+						cloud.position.y+=speed;
+				}
+
+			}
+
+      function createWall(wallX,wallY,wallZ,wallRot,walll,wallL,wallW,wTexture,wallSet){
+          wallGeo = new THREE.BoxBufferGeometry( walll, wallL, wallW );
+					if(wTexture == 1){
+          	wallMat = new THREE.MeshPhongMaterial( {map: wallTexture} );
+					}else if (wTexture == 2) {
+						if(wallSet == 1){
+							wallMat = new THREE.MeshPhongMaterial( {map: modifWallTextureD} );
+						}else if (wallSet == 2) {
+							wallMat = new THREE.MeshPhongMaterial( {map: modifWallTextureG} );
+						}
+					}
+          wall = new THREE.Mesh( wallGeo, wallMat );
+          wall.position.y=wallY;
+          wall.position.x=wallX;
+          wall.position.z=wallZ;
+          wall.rotation.y = wallRot;
+					wall.receiveShadow = true;
+					wall.castShadow = true;
+          scene.add(wall);
+      }
+
+      function createRoof(roofX,roofY,roofZ,roofRotX,roofRotY,roofl,roofL,roofW){
+        roofGeo = new THREE.BoxBufferGeometry(roofl,roofL,roofW);
+        roofMat = new THREE.MeshPhongMaterial( {map: roofTexture} );
+        roof = new THREE.Mesh(roofGeo,roofMat);
+        roof.position.x = roofX;
+        roof.position.y = roofY;
+        roof.position.z = roofZ;
+        roof.rotation.x = roofRotX;
+        roof.rotation.y = roofRotY;
+				roof.receiveShadow = true;
+				roof.castShadow = true;
+        scene.add(roof);
+      }
+
+      function createFloor(floorY){
+        floorGeo = new THREE.BoxBufferGeometry( 4000, 10, 4000 );
+        floorMat = new THREE.MeshPhongMaterial( {map: wallTexture} );
+        floor = new THREE.Mesh( floorGeo, floorMat );
+        floor.position.y = floorY;
+				floor.receiveShadow = true;
+				floor.castShadow = true;
+        scene.add(floor);
+      }
+
+      function bottomFloor(bx,by,bz,bpx,bpy,bpz){
+        bottomGeo = new THREE.BoxBufferGeometry( bx, by, bz);
+				bottomMat = new THREE.MeshPhongMaterial( { map: whiteTexture } ); //blanc
+				bottom = new THREE.Mesh( bottomGeo, bottomMat );
+        bottom.position.y =bpy;
+        bottom.position.x =bpx;
+        bottom.position.z =bpz;
+				bottom.receiveShadow = true;
+				bottom.castShadow = true;
+        scene.add(bottom);
+      }
+
+      function entryStep(stepZ,stepY,stepHeight){
+        stepGeo = new THREE.BoxBufferGeometry( 2000, stepHeight, stepZ);
+				stepMat = new THREE.MeshPhongMaterial( { map: whiteTexture } ); //blanc
+				step = new THREE.Mesh( stepGeo, stepMat );
+        step.position.y =stepY;
+        step.position.x = 1000;
+        step.position.z = 2500;
+				step.receiveShadow = true;
+				step.castShadow = true;
+        scene.add(step);
+      }
+
+      function entrycolumn(columnX){
+        columnGeo = new THREE.CylinderBufferGeometry( 75, 75, 2000,64);
+				columnMat = new THREE.MeshPhongMaterial( { map: whiteTexture } ); //blanc
+				column = new THREE.Mesh( columnGeo, columnMat );
+        column.position.y =1400;
+        column.position.x = columnX;
+        column.position.z = 2800;
+				column.receiveShadow = true;
+				column.castShadow = true;
+
+        column2Y = 650;
+        for (var i = 0; i < 2; i++) { //ornement colonne entrée
+          columnGeo2 = new THREE.CylinderBufferGeometry( 100, 100, 500,64);
+          column2 = new THREE.Mesh( columnGeo2, columnMat );
+          column2.position.y =column2Y;
+          column2.position.x = columnX;
+          column2.position.z = 2800;
+          column2Y += 1500;
+					column2.receiveShadow = true;
+					column2.castShadow = true;
+          scene.add(column2);
+        }
+        scene.add(column);
+      }
+
+
+      function createTriangle(triangleZ,triTexture,vx1,vy1,vx2,vy2,vx3,vy3,triRotY,vtx,vty){
+        triangleGeo = new THREE.Geometry();
+
+        if(triTexture == 'wall'){
+          triangleMat = new THREE.MeshPhongMaterial( {map: wallTexture,side: THREE.DoubleSide} );
+        }else if( triTexture == 'white'){
+          triangleMat = new THREE.MeshPhongMaterial( {map: whiteTexture,side: THREE.DoubleSide} );
+        }
+        triangleGeo.vertices.push(
+					new THREE.Vector3( vx1, vy1, triangleZ), //droite
+					new THREE.Vector3( vx2,  vy2, triangleZ), //haut
+					new THREE.Vector3(vx3, vy3, triangleZ) //gauche
+				);
+				triangleGeo.faces.push(new THREE.Face3(0, 1, 2));
+
+        triangleGeo.faceVertexUvs[0].push([
+					new THREE.Vector2(0,0), //droite
+					new THREE.Vector2(vtx,vty), //haut
+					new THREE.Vector2(1,0) //gauche
+        ]);
+				triangleGeo.uvsNeedUpdate = true;
+        triangleGeo.computeFaceNormals();
+				triangle = new THREE.Mesh( triangleGeo , triangleMat );
+
+        triangle.rotation.y = triRotY;
+				triangle.receiveShadow = true;
+        scene.add( triangle );
+      }
+
+      function backbox(){
+        backGeo = new THREE.BoxBufferGeometry( 2000, 2200, 1000 );
+        backMat = new THREE.MeshPhongMaterial( {map: wallTexture} );
+        back = new THREE.Mesh( backGeo, backMat );
+        back.position.y= 1300;
+        back.position.x= 0;
+        back.position.z= -2500;
+				back.receiveShadow = true;
+				back.castShadow = true;
+        scene.add(back);
+      }
+
+			function windowRoof(){
+				winRGeo = new THREE.BoxBufferGeometry( 1500, 900, 900 );
+        winRMat = new THREE.MeshPhongMaterial( {map: wallTexture} );
+        winRoof = new THREE.Mesh( winRGeo, winRMat );
+        winRoof.position.y= 3800;
+        winRoof.position.x= -700;
+        winRoof.position.z= 0;
+				winRoof.receiveShadow = true;
+				winRoof.castShadow = true;
+        scene.add(winRoof);
+			}
+
+      function textKame(textContent,textX,textY){
+
+        const loader = new THREE.FontLoader();
+
+        loader.load( '../three.js-master/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+
+        	textGeo = new THREE.TextBufferGeometry( textContent, {
+        		font: font,
+        		size: 350
+        	} );
+          textMat = new THREE.MeshPhongMaterial( { color: 0xcd5c5c} );
+
+          text = new THREE.Mesh( textGeo, textMat );
+
+          text.position.x = textX;
+          text.position.y = textY;
+          text.position.z = 2000;
+          text.rotation.z =0.5;
+					text.receiveShadow = true;
+					text.castShadow = true;
+          scene.add(text);
+        } );
+      }
+
+			function staticwindow(sWinX,sWinY,sWinZ,sWinl,sWinL,sWinW,sWinRot){
+				winSGeo = new THREE.BoxBufferGeometry( sWinl, sWinL, sWinW );
+        winSMat = new THREE.MeshPhongMaterial( {map: winDTexture} );
+        statWin = new THREE.Mesh( winSGeo, winSMat );
+        statWin.position.x= sWinX;
+        statWin.position.y= sWinY;
+        statWin.position.z= sWinZ;
+				statWin.rotation.y=sWinRot;
+				statWin.receiveShadow = true;
+				statWin.castShadow = true;
+        scene.add(statWin);
+			}
+
+
+			function dynamicWindow(dWinX,dWinY,dWinZ,winTexture,countWin){
+				winDGeo = new THREE.BoxBufferGeometry( 1200,1000 ,30 );
+				if(winTexture == 'dWin'){
+        	winDMat = new THREE.MeshPhongMaterial( {map: winDTexture} );
+				}else if (winTexture == 'gWin'){
+					winDMat = new THREE.MeshPhongMaterial( {map: winGTexture} );
+				}
+ 				if(countWin == 1){
+	        dynWin1 = new THREE.Mesh( winDGeo, winDMat );
+	        dynWin1.position.x= dWinX;
+	        dynWin1.position.y= dWinY;
+	        dynWin1.position.z= dWinZ;
+					dynWin1.rotation.y=1.57;
+					dynWin1.receiveShadow = true;
+					dynWin1.castShadow = true;
+	        scene.add(dynWin1);
+				}else if (countWin == 2) {
+					dynWin2 = new THREE.Mesh( winDGeo, winDMat );
+	        dynWin2.position.x= dWinX;
+	        dynWin2.position.y= dWinY;
+	        dynWin2.position.z= dWinZ;
+					dynWin2.rotation.y=1.57;
+					dynWin2.receiveShadow = true;
+					dynWin2.castShadow = true;
+	        scene.add(dynWin2);
+				}else if (countWin == 3) {
+					dynWin3 = new THREE.Mesh( winDGeo, winDMat );
+	        dynWin3.position.x= dWinX;
+	        dynWin3.position.y= dWinY;
+	        dynWin3.position.z= dWinZ;
+					dynWin3.rotation.y=1.57;
+					dynWin3.receiveShadow = true;
+					dynWin3.castShadow = true;
+	        scene.add(dynWin3);
+				}else if (countWin == 4) {
+					dynWin4 = new THREE.Mesh( winDGeo, winDMat );
+	        dynWin4.position.x= dWinX;
+	        dynWin4.position.y= dWinY;
+	        dynWin4.position.z= dWinZ;
+					dynWin4.rotation.y=1.57;
+					dynWin4.receiveShadow = true;
+					dynWin4.castShadow = true;
+	        scene.add(dynWin4);
+				}
+			}
+
+			function createdoor(){
+				doorGeo = new THREE.BoxBufferGeometry( 1000, 1800, 40  );
+        doorMat = new THREE.MeshPhongMaterial( {map: doorTexture} );
+        door = new THREE.Mesh( doorGeo, doorMat );
+        door.position.x= 1000 ;
+        door.position.y= 1250;
+        door.position.z= 2000;
+				door.receiveShadow = true;
+				door.castShadow = true;
+        scene.add(door);
+			}
+
+			function addRock(rockX,rockY,rockZ,rockRadius,rockDetail){
+				rockGeo = new THREE.TetrahedronBufferGeometry( rockRadius, rockDetail);
+				rockMat = new THREE.MeshPhongMaterial( {map: rockTexture} );
+				rock = new THREE.Mesh( rockGeo, rockMat );
+				rock.position.x= rockX;
+				rock.position.y= rockY;
+				rock.position.z= rockZ;
+				rock.receiveShadow = true;
+				rock.castShadow = true;
+				scene.add(rock);
+			}
+
+
+
+			function addPalm(palmX,palmY,palmZ){
+				loaderpalm = new ColladaLoader();
+				loaderpalm.load( '3dasset/palm/model.dae', function ( collada ) {
+
+					palm = collada.scene;
+
+					palm.position.x =palmX;
+					palm.position.y =palmY;
+					palm.position.z =palmZ;
+					palm.scale.set(70,70,70);
+
+					palm.traverse(function (child) { //ajout ombres
+							child.castShadow = true;
+							child.receiveShadow = true;
+					 });
+
+					scene.add( palm);
+
+				});
+			}
+
+			function addChair(chairX,chairY,chairZ,chairRot){
+				loaderchair = new ColladaLoader();
+				loaderchair.load( '3dasset/chair/model.dae', function ( collada ) {
+
+					chair = collada.scene;
+
+					chair.position.x =chairX;
+					chair.position.y =chairY;
+					chair.position.z =chairZ;
+					chair.rotation.z = chairRot;
+					chair.scale.set(30,30,30);
+
+					chair.traverse(function (child) { //ajout ombres
+							child.castShadow = true;
+							child.receiveShadow = true;
+					 });
+
+					scene.add(chair);
+
+				});
+			}
+
+			function addumbrella(){
+				loaderumbrella = new ColladaLoader();
+				loaderumbrella.load( '3dasset/umbrella/model.dae', function ( collada ) {
+
+					umbrella = collada.scene;
+
+					umbrella.position.x =-3500;
+					umbrella.position.y =-50;
+					umbrella.position.z =3500;
+					umbrella.rotation.x = 5
+					umbrella.scale.set(30,30,30);
+
+					umbrella.traverse(function (child) { //ajout ombres
+							child.castShadow = true;
+							child.receiveShadow = true;
+					 });
+
+					scene.add(umbrella);
+
+				});
+			}
+
+			function dragonBall(){
+				loaderdb = new ColladaLoader();
+				loaderdb.load( '3dasset/db/model.dae', function ( collada ) {
+
+					db = collada.scene;
+					db.position.x =0;
+					db.position.y =1600;
+					db.position.z =0;
+					db.rotation.y =1.57;
+					db.scale.set(70,70,70);
+
+					db.traverse(function (child) { //ajout ombres
+							child.castShadow = true;
+							child.receiveShadow = true;
+					 });
+
+					scene.add(db);
+
+				});
+			}
+
+			function createRadar(){
+				loaderRadar = new GLTFLoader();
+				loaderRadar.load( '3dasset/radar/scene.gltf', function ( gltf) {
+
+					radar = gltf.scene;
+
+					radar.position.x =9000;
+					radar.position.y =1000;
+					radar.position.z =-9000;
+					radar.rotation.x =4.71;
+					radar.scale.set(50,50,50);
+					radar.traverse(function (child) { //ajout ombres
+							child.castShadow = true;
+							child.receiveShadow = true;
+					 });
+					scene.add(radar);
+
+				});
+			}
+
+			function addgoku (){
+				loaderGoku = new GLTFLoader();
+				loaderGoku.load( '3dasset/goku/scene.gltf', function ( gltf) {
+
+					goku = gltf.scene;
+
+					goku.position.x =1000;
+					goku.position.y =5000;
+					goku.position.z =5000;
+					goku.rotation.y = 3.14
+					goku.scale.set(3000,3000,3000);
+					goku.traverse(function (child) { //ajout ombres
+							child.castShadow = true;
+							child.receiveShadow = true;
+					 });
+					scene.add(goku);
+
+				});
+			}
+
+			function addcloud (){
+				loaderCloud = new GLTFLoader();
+				loaderCloud.load( '3dasset/cloud/scene.gltf', function ( gltf) {
+
+					cloud = gltf.scene;
+
+					cloud.position.x =1000;
+					cloud.position.y =4600;
+					cloud.position.z =5000;
+					cloud.scale.set(3,3,3);
+					cloud.traverse(function (child) { //ajout ombres
+							child.castShadow = true;
+							child.receiveShadow = true;
+					 });
+					scene.add(cloud);
+				});
+			}
+
+			function summonShenron(){
+				loaderShenron = new FBXLoader();
+				loaderShenron.load( '3dasset/shenron/shenron.FBX', function ( shenron) {
+
+					shenron.position.x =0;
+					shenron.position.y =6000;
+					shenron.position.z =0;
+					shenron.scale.set(8,8,8);
+					shenron.traverse(function (child) { //ajout ombres
+							child.castShadow = true;
+							child.receiveShadow = true;
+					 });
+					scene.add(shenron);
+				});
+
+				shenlight = new THREE.PointLight(0xff7f00,5);
+				shenlight.position.set(2000,12000,3000);
+				shenlight.distance= 6000;
+				scene.add(shenlight);
+
+				changeBackground(2);
+			}
+
+			function openWindows(){
+				if ( winTrigger == 0){ // F
+					dynWin1.rotation.y = 2.0;
+					dynWin1.position.z -=1100;
+					dynWin1.position.x -=250;
+
+					dynWin2.rotation.y = 1.2;
+					dynWin2.position.z +=1100;
+					dynWin2.position.x -=250;
+
+					dynWin3.rotation.y = 4.2;
+					dynWin3.position.z -=2300;
+					dynWin3.position.x +=300;
+
+					dynWin4.rotation.y = 5.3;
+					dynWin4.position.z +=2250;
+					dynWin4.position.x +=300;
+
+					winTrigger = 1;
+				}
+			}
+
+			function changeBackground(actualBg){
+				if(actualBg == 1){
+					document.getElementById("body").style.background = "url('background/day.jpg')";
+				}else if (actualBg == 2){
+					document.getElementById("body").style.background = "url('background/night.jpg')";
+				}
+			}
+
+			function changeMusic(){
+				sound1.stop();
+				sound2.play();
+			}
+
+		</script>
+
+	</body>
+</html>
