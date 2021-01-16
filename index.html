@@ -9,7 +9,13 @@
 		<link type="text/css" rel="stylesheet" href="master.css">
 	</head>
 	<body id="body">
+		<video id="video" loop playsinline style="display:none">
+			<source src="water.mp4">
+		</video>
 
+		<section id="loading-screen">
+			<div id="loader"></div>
+		</section>
 		<script type="module">
 
 			import * as THREE from '../three.js-master/build/three.module.js';
@@ -19,9 +25,12 @@
 			import { GLTFLoader } from '../three.js-master/examples/jsm/loaders/GLTFLoader.js';
 			import Stats from '../three.js-master/examples/jsm/libs/stats.module.js';
 
+			const video = document.getElementById( 'video' );
+			video.play();
+
       const islandTexture = new THREE.TextureLoader().load( 'sand.jpg' );
       const islandTexture2 = new THREE.TextureLoader().load( 'grass.jpg' );
-      const seaTexture = new THREE.TextureLoader().load( 'sea.jpg' );
+      const seaTexture = new THREE.VideoTexture( video );
       const wallTexture = new THREE.TextureLoader().load( 'wall.jpg' );
       const roofTexture = new THREE.TextureLoader().load( 'roof.jpg' );
       const whiteTexture = new THREE.TextureLoader().load( 'white.jpg' );
@@ -72,21 +81,30 @@
 			let decalage = 0;
 			let finishtrigger =0;
 			let nbMusic,audioLoader1,sound1,listener1,audioLoader2,sound2,listener2;
+			let loadingScreen,loadingManager;
 
 			init();
 			animate();
 
 			function init() {
 
-				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 100,2000000 );
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 100,2000000 ); //fov (angle d'ouverture),aspect,near,far
 				camera.position.set(0,10000,15000);
 
 				scene = new THREE.Scene();
 
+				 loadingManager = new THREE.LoadingManager( () => {// création de la file d'attente
 
-				islandGeo = new THREE.CylinderBufferGeometry( 9000, 9000, 50,15);
-				islandMat = new THREE.MeshPhongMaterial( { map: islandTexture } );
-				island = new THREE.Mesh( islandGeo, islandMat );
+					 loadingScreen = document.getElementById( 'loading-screen' );//tant que goku n'a pas chargé on effectue l'animation
+					loadingScreen.classList.add( 'fade-out' );
+
+					loadingScreen.addEventListener( 'transitionend', onTransitionEnd ); //une fois terminé on enlève l'animation
+
+				} );
+
+				islandGeo = new THREE.CylinderBufferGeometry( 9000, 9000, 50,15); //geometry
+				islandMat = new THREE.MeshPhongMaterial( { map: islandTexture } ); //texture
+				island = new THREE.Mesh( islandGeo, islandMat ); //geometry+texture
 				island.receiveShadow = true;
 
         islandGeo2 = new THREE.CylinderBufferGeometry( 7000, 7000, 25,15);
@@ -95,12 +113,13 @@
         island2.position.y = 50;
 				island2.receiveShadow = true;
 
-        seaGeo = new THREE.PlaneBufferGeometry(50000,50000);
-				seaMat = new THREE.MeshPhongMaterial( { map: seaTexture, side: THREE.DoubleSide} );
+		    seaGeo = new THREE.PlaneBufferGeometry(50000,50000);
+				seaMat = new THREE.MeshPhongMaterial( { map: seaTexture, side: THREE.DoubleSide} ); //texture des deux cotés (dessus+dessous)
 				sea = new THREE.Mesh( seaGeo, seaMat );
 				sea.receiveShadow = true;
-        sea.position.y = -50;
-        sea.rotation.x = 1.57;
+		    sea.position.y = -50;
+		    sea.rotation.x = 1.57;
+
 
 				scene.add( island ); //sable
         scene.add( island2 ); // herbe
@@ -201,7 +220,7 @@
 
 				addcloud();
 
-				ambientLight = new THREE.AmbientLight( 0xffffff, 0.1 );
+				ambientLight = new THREE.AmbientLight( 0xffffff, 0.1 ); //couleur,intensité
 				scene.add(ambientLight);
 
 				light = new THREE.SpotLight(0xffe484,2); //(couleur, intensité)
@@ -214,7 +233,7 @@
 				light.shadow.camera.far = 100000; // distance maximum (ombre)
 				scene.add(light);
 
-				intlight = new THREE.PointLight(0xff7f00,1.5);
+				intlight = new THREE.PointLight(0xff7f00,1.5); //pour dragon ball
 				intlight.castShadow = true;
 				intlight.position.set(0,1600,0);
 				intlight.shadow.camera.near = 800;
@@ -228,53 +247,54 @@
 				// shadowCameraHelper = new THREE.CameraHelper( shenlight.shadow.camera );
 				// //scene.add( shadowCameraHelper );
 
-				listener1 = new THREE.AudioListener();
-				listener2 = new THREE.AudioListener();
+				listener1 = new THREE.AudioListener();//lecteur de disque
+				listener2 = new THREE.AudioListener();//ecouter de la musique
 				camera.add( listener1 );
 				camera.add( listener2 );
 
-				sound1 = new THREE.Audio( listener1 );
-				sound2 = new THREE.Audio( listener1 );
+				sound1 = new THREE.Audio( listener1 ); //disque
+				sound2 = new THREE.Audio( listener1 );//jouer de la musique
 
-				audioLoader1 = new THREE.AudioLoader();
-				audioLoader2 = new THREE.AudioLoader();
-				audioLoader1.load( 'music/m1.mp3', function( buffer ) {
-					sound1.setBuffer( buffer );
-					sound1.setLoop( true );
-					sound1.setVolume( 2 );
+				audioLoader1 = new THREE.AudioLoader(); //piste du disque
+				audioLoader2 = new THREE.AudioLoader();// quoi jouer
+				audioLoader1.load( 'music/m1.mp3', function( buffer ) { //musique kamehouse
+					sound1.setBuffer( buffer ); //met l'audio dans un buffer
+					sound1.setLoop( true ); //recommence
+					sound1.setVolume( 0.05 );
 					sound1.play();
 				});
 
-				audioLoader2.load( 'music/m2.mp3', function( buffer ) {
+				audioLoader2.load( 'music/m2.mp3', function( buffer ) { //musique shenron
 					sound2.setBuffer( buffer );
 					sound2.setLoop( true );
-					sound2.setVolume( 2 );
+					sound2.setVolume( 0.05 );
 				});
 
-				showFPS = new Stats();
+				showFPS = new Stats(); //compteur fps
 				showFPS.domElement.style.position = 'absolute';
 				showFPS.domElement.style.top = '0px';
 				document.body.appendChild( showFPS.domElement );
 
-				renderer = new THREE.WebGLRenderer( { antialias: true,alpha: true } );
+				renderer = new THREE.WebGLRenderer( { antialias: true,alpha: true } ); //affine la résolution de la texture, pas de fond(fond transparent)
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				document.body.appendChild( renderer.domElement );
 
-				renderer.shadowMap.enabled = true;
-				renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-				renderer.outputEncoding = THREE.sRGBEncoding;
+				renderer.shadowMap.enabled = true; //pour les ombres
+				renderer.shadowMap.type = THREE.PCFSoftShadowMap; //type d'ombre
+				renderer.outputEncoding = THREE.sRGBEncoding; //couleur de l'ombre
 
         Orbcontrols = new OrbitControls(camera,renderer.domElement, canvas);
-	  		Orbcontrols.target.set(0, 5000, 0);
+	  		Orbcontrols.target.set(0, 5000, 0); // point de vue de camera
 	  		Orbcontrols.update();
+
 
 				window.addEventListener( 'resize', onWindowResize, false );
 
 			}
 
 
-			function onWindowResize() {
+			function onWindowResize() { //resize de la fenetre
 
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
@@ -289,19 +309,21 @@
 				requestAnimationFrame( animate );
 
 				if(db != undefined){
-					db.rotation.z +=0.01;
+					db.rotation.z +=0.01; //dragon ball
 				}
 				if(radar != undefined){
-					radar.rotation.z +=0.02;
+					radar.rotation.z +=0.02; //radar
 				}
+
 				if((radar != undefined) && (goku != undefined) && (cloud != undefined)){
 					//console.log(goku.position.x+'/'+goku.position.y+'/'+goku.position.z+'///'+radar.position.x+'/'+radar.position.y+'/'+radar.position.z)
-					if((goku.position.y <= radar.position.y+500) && (goku.position.y >= radar.position.y-500)
-							&& (goku.position.z <= radar.position.z+500) && (goku.position.z >= radar.position.z-500)
+					if((goku.position.y <= radar.position.y+500) && (goku.position.y >= radar.position.y-500) //hitbox du radar (carrè de 500px de coté)
+							&& (goku.position.z <= radar.position.z+500) && (goku.position.z >= radar.position.z-500)//on compare la position de goku et du radar
 							&& (goku.position.x <= radar.position.x+500) && (goku.position.x >= radar.position.x-500) && testSummon == 0){
 						testSummon = 1;
 						finishtrigger = 1;
 						scene.remove(radar);
+						light.color.setHex( 0x2e4482 );
 						openWindows();
 						changeMusic();
 						summonShenron();
@@ -309,13 +331,13 @@
 				}
 
 				if(finishtrigger == 0){
-					if(light.position.y < 0){
-						decalage =0;
-						if(actualBg == 1){
+					if(light.position.y < 0){//cycle jour/nuit
+						decalage =0; //reset de la position
+						if(actualBg == 1){ //si jour
 							actualBg = 2;
 							changeBackground(actualBg);
 							light.color.setHex( 0x2e4482 );
-						}else if(actualBg == 2){
+						}else if(actualBg == 2){ //si nuit
 							actualBg = 1;
 							changeBackground(actualBg);
 							light.color.setHex( 0xffe484 );
@@ -327,7 +349,7 @@
 					light.position.z = 40000*Math.cos(decalage);
 					//console.log(light.position.x+'/'+light.position.y+'/'+light.position.z);
 					decalage += 0.003;
-				}else if (finishtrigger == 1) {
+				}else if (finishtrigger == 1) { // quand invocation shenron -> on place la lumière à ses coordonnées
 					light.position.x = 20214;
 					light.position.y = 34516;
 					light.position.z = 20214;
@@ -344,16 +366,21 @@
 				// lightHelper.update();
 				// //
 				// shadowCameraHelper.update();
-
 				renderer.render( scene, camera );
+
+			}
+
+			function onTransitionEnd( event ) {
+
+					event.target.remove(); //on enlève l'écran de chargement
 
 			}
 
 			let winTrigger = 0;
 			let speed = 300;
-			document.addEventListener("keydown", onDocumentKeyDown);
-			function onDocumentKeyDown(event) {
-				if (event.keyCode == 70 && winTrigger == 0){ // F
+			document.addEventListener("keydown", onDocumentKeyDown); //récupère le keycode de chaque touche préssée
+			function onDocumentKeyDown(event) { //si touche si préssée faire :
+				if (event.keyCode == 70 && winTrigger == 0){ // 70:  qui s'ouvreF //fenetre qui s'ouvre
 					dynWin1.rotation.y = 2.0;
 					dynWin1.position.z -=1100;
 					dynWin1.position.x -=250;
@@ -391,6 +418,7 @@
 					winTrigger = 0;
 				}
 
+				//deplcament de goku
 				if (event.keyCode == 90) { // arrière (Z)
 						goku.position.z -= speed;
 						cloud.position.z -= speed;
@@ -407,15 +435,16 @@
 		        goku.position.x += speed;
 						cloud.position.x += speed;
 						goku.rotation.y = - 1.57;
-				} else if (event.keyCode == 16 && goku.position.y > 800){ // Bas (Maj)
+				} else if (event.keyCode == 16 && goku.position.y > 800){ // Bas (Maj) //descendre
 						goku.position.y-=speed;
 						cloud.position.y-=speed;
-				}	else if (event.keyCode == 32){ //Saut (ESPACE)
+				}	else if (event.keyCode == 32){ //Saut (ESPACE) //montée
 						goku.position.y+=speed;
 						cloud.position.y+=speed;
 				}
 
 			}
+
 
       function createWall(wallX,wallY,wallZ,wallRot,walll,wallL,wallW,wTexture,wallSet){
           wallGeo = new THREE.BoxBufferGeometry( walll, wallL, wallW );
@@ -489,7 +518,7 @@
       function entrycolumn(columnX){
         columnGeo = new THREE.CylinderBufferGeometry( 75, 75, 2000,64);
 				columnMat = new THREE.MeshPhongMaterial( { map: whiteTexture } ); //blanc
-				column = new THREE.Mesh( columnGeo, columnMat );
+				column = new THREE.Mesh( columnGeo, columnMat ); //colonne principale
         column.position.y =1400;
         column.position.x = columnX;
         column.position.z = 2800;
@@ -520,21 +549,22 @@
         }else if( triTexture == 'white'){
           triangleMat = new THREE.MeshPhongMaterial( {map: whiteTexture,side: THREE.DoubleSide} );
         }
-        triangleGeo.vertices.push(
+
+        triangleGeo.vertices.push( //-> repère de la scène | coordonnèes des sommets du triangle
 					new THREE.Vector3( vx1, vy1, triangleZ), //droite
 					new THREE.Vector3( vx2,  vy2, triangleZ), //haut
 					new THREE.Vector3(vx3, vy3, triangleZ) //gauche
 				);
-				triangleGeo.faces.push(new THREE.Face3(0, 1, 2));
+				triangleGeo.faces.push(new THREE.Face3(0, 1, 2));//on relie les sommets
 
-        triangleGeo.faceVertexUvs[0].push([
+        triangleGeo.faceVertexUvs[0].push([ // définir un model de texture (comment est positionnnée la texture) :schéma pierre -> repère du triangle
 					new THREE.Vector2(0,0), //droite
 					new THREE.Vector2(vtx,vty), //haut
 					new THREE.Vector2(1,0) //gauche
         ]);
 				triangleGeo.uvsNeedUpdate = true;
-        triangleGeo.computeFaceNormals();
-				triangle = new THREE.Mesh( triangleGeo , triangleMat );
+        triangleGeo.computeFaceNormals();//calcul de la géometrie
+				triangle = new THREE.Mesh( triangleGeo , triangleMat ); //texture+géometrie
 
         triangle.rotation.y = triRotY;
 				triangle.receiveShadow = true;
@@ -571,13 +601,13 @@
 
         loader.load( '../three.js-master/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
 
-        	textGeo = new THREE.TextBufferGeometry( textContent, {
+        	textGeo = new THREE.TextBufferGeometry( textContent, {//geometry
         		font: font,
         		size: 350
         	} );
-          textMat = new THREE.MeshPhongMaterial( { color: 0xcd5c5c} );
+          textMat = new THREE.MeshPhongMaterial( { color: 0xcd5c5c} );//texture
 
-          text = new THREE.Mesh( textGeo, textMat );
+          text = new THREE.Mesh( textGeo, textMat );//geometry+texture
 
           text.position.x = textX;
           text.position.y = textY;
@@ -673,20 +703,18 @@
 				scene.add(rock);
 			}
 
-
-
 			function addPalm(palmX,palmY,palmZ){
-				loaderpalm = new ColladaLoader();
-				loaderpalm.load( '3dasset/palm/model.dae', function ( collada ) {
+				loaderpalm = new ColladaLoader(); //chargeur de texture
+				loaderpalm.load( '3dasset/palm/model.dae', function ( collada ) { //on charge le modele
 
 					palm = collada.scene;
 
 					palm.position.x =palmX;
 					palm.position.y =palmY;
 					palm.position.z =palmZ;
-					palm.scale.set(70,70,70);
+					palm.scale.set(70,70,70); //taille
 
-					palm.traverse(function (child) { //ajout ombres
+					palm.traverse(function (child) { //tous les enfants(composants) de la texture ->ajout ombres
 							child.castShadow = true;
 							child.receiveShadow = true;
 					 });
@@ -782,7 +810,7 @@
 			}
 
 			function addgoku (){
-				loaderGoku = new GLTFLoader();
+				loaderGoku = new GLTFLoader(loadingManager);
 				loaderGoku.load( '3dasset/goku/scene.gltf', function ( gltf) {
 
 					goku = gltf.scene;
@@ -834,7 +862,7 @@
 					scene.add(shenron);
 				});
 
-				shenlight = new THREE.PointLight(0xff7f00,5);
+				shenlight = new THREE.PointLight(0xff7f00,5); //lumière shenron
 				shenlight.position.set(2000,12000,3000);
 				shenlight.distance= 6000;
 				scene.add(shenlight);
